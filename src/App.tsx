@@ -1,51 +1,51 @@
-import React from "react"
-import styled from "@emotion/styled"
+import React, { useEffect, useRef, useState } from "react"
+import { getCoinList } from "./services/coinList.service"
+import { getBitcoinPrice } from "./services/bitcoinPrice.service"
+import { ICoin } from "./types"
+import _ from "lodash"
+import "../node_modules/react-vis/dist/style.css"
 
-const MainPage = styled.main`
-	color: #555;
-	background-color: #eee;
-	height: 100vh;
-`
-const Header = styled.header`
-	position: fixed;
-	height: 6rem;
-	width: 100%;
-	display: flex;
-	align-items: center;
-	background: #ffffff;
-	padding: 0 4rem;
-`
-const Title = styled.p`
-	font-size: 2rem;
-`
-const Container = styled.div`
-	height: 100%;
-	width: 100%;
-	padding: 6rem 1rem 0 1rem;
-	display: flex;
-	justify-content: center;
-	flex-wrap: wrap;
-`
-const Card = styled.div`
-	background-color: white;
-	border-radius: 4px;
-	box-shadow: 2px 2px 4px #aaa;
-	margin: 1rem;
-	flex: 1 1 15rem;
-	&:nth-child(2) {
-		flex: 3 1 30rem;
-	}
-`
+import { MainPage, Header, Container, Card } from "./components/UI"
 
 function App() {
+	const [error, setError] = useState<any>()
+	const [isLoading, setIsLoading] = useState(false)
+	const [coinList, setCoinList] = useState<ICoin[]>([])
+	const [bitcoinPrices, setBitcoinPrices] = useState<string[][]>([])
+
+	useEffect(() => {
+		const fetchCoinList = async () => {
+			try {
+				const coinList = await getCoinList()
+
+				setCoinList(coinList.data)
+			} catch (e) {}
+		}
+		const fetchBitcoinPrice = async () => {
+			try {
+				const bitcoinPrice = await getBitcoinPrice()
+
+				setBitcoinPrices(bitcoinPrice.data)
+			} catch (e) {}
+		}
+		fetchCoinList()
+		fetchBitcoinPrice()
+
+		const interval = setInterval(() => {
+			fetchCoinList()
+			fetchBitcoinPrice()
+		}, 100000)
+		return () => clearInterval(interval)
+	}, [])
+
 	return (
 		<MainPage>
 			<Header>
-				<Title>Crypto</Title>
+				<p style={{ fontSize: "2rem" }}>Crypto</p>
 			</Header>
 			<Container>
-				<Card>ddd</Card>
-				<Card>ddd</Card>
+				<Card></Card>
+				<Card></Card>
 			</Container>
 		</MainPage>
 	)
