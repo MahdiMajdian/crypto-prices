@@ -4,9 +4,20 @@ import { getBitcoinPrice } from "./services/bitcoinPrice.service"
 import { ICoin } from "./types"
 import _ from "lodash"
 import "../node_modules/react-vis/dist/style.css"
+import {
+	XYPlot,
+	LineSeries,
+	HorizontalGridLines,
+	YAxis,
+	XAxis,
+	VerticalGridLines,
+} from "react-vis"
+import "../node_modules/react-vis/dist/style.css"
 import CoinItem from "./components/CoinItem/CoinItem"
 import { MainPage, Header, Container, Card } from "./components/UI"
+import { useContainerDimensions } from "./hooks/useContainerDimensions"
 
+let data: { x: number; y: number }[] = []
 const localPinList = JSON.parse(localStorage.getItem("pins")!)
 
 function App() {
@@ -15,6 +26,8 @@ function App() {
 	const [coinList, setCoinList] = useState<ICoin[]>([])
 	const [bitcoinPrices, setBitcoinPrices] = useState<string[][]>([])
 	const [pinList, setPinList] = useState<ICoin[]>(localPinList)
+	const graphRef = useRef<HTMLDivElement>(null)
+	const { width, height } = useContainerDimensions(graphRef)
 
 	useEffect(() => {
 		const fetchCoinList = async () => {
@@ -50,6 +63,13 @@ function App() {
 		}, 100000)
 		return () => clearInterval(interval)
 	}, [])
+
+	useEffect(() => {
+		const result = bitcoinPrices.map((item, index) => {
+			return { x: index, y: +item[2] }
+		})
+		data = result
+	}, [bitcoinPrices])
 
 	const itemClickHandler = (item: ICoin) => {
 		setPinList((prev) => {
@@ -116,7 +136,20 @@ function App() {
 						</h4>
 					)}
 				</Card>
-				<Card></Card>
+				<Card ref={graphRef}>
+					<XYPlot
+						height={height - 32}
+						width={width - 32}
+						stroke="red"
+						animation>
+						<HorizontalGridLines />
+						<VerticalGridLines />
+
+						<YAxis title="Price" />
+						<XAxis title="Date" />
+						<LineSeries animation data={data} />
+					</XYPlot>
+				</Card>
 			</Container>
 		</MainPage>
 	)
