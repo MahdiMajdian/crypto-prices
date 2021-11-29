@@ -4,14 +4,17 @@ import { getBitcoinPrice } from "./services/bitcoinPrice.service"
 import { ICoin } from "./types"
 import _ from "lodash"
 import "../node_modules/react-vis/dist/style.css"
-
+import CoinItem from "./components/CoinItem/CoinItem"
 import { MainPage, Header, Container, Card } from "./components/UI"
+
+const localPinList = JSON.parse(localStorage.getItem("pins")!)
 
 function App() {
 	const [error, setError] = useState<any>()
 	const [isLoading, setIsLoading] = useState(false)
 	const [coinList, setCoinList] = useState<ICoin[]>([])
 	const [bitcoinPrices, setBitcoinPrices] = useState<string[][]>([])
+	const [pinList, setPinList] = useState<ICoin[]>(localPinList)
 
 	useEffect(() => {
 		const fetchCoinList = async () => {
@@ -48,6 +51,20 @@ function App() {
 		return () => clearInterval(interval)
 	}, [])
 
+	const itemClickHandler = (item: ICoin) => {
+		setPinList((prev) => {
+			const existingItem = _.find(prev, (o) => _.isEqual(item, o))
+			let state
+			if (existingItem !== undefined) {
+				state = prev.filter((i) => !_.isEqual(i, item))
+			} else {
+				state = [...prev, item]
+			}
+			localStorage.setItem("pins", JSON.stringify(state))
+			return state
+		})
+	}
+
 	if (isLoading) {
 		return (
 			<MainPage>
@@ -63,7 +80,35 @@ function App() {
 				<p style={{ fontSize: "2rem" }}>Crypto</p>
 			</Header>
 			<Container>
-				<Card></Card>
+				<Card>
+					<ul>
+						{pinList.map((item) => (
+							<CoinItem
+								key={Math.random()}
+								name={item.name}
+								baseCurrency={item.baseCurrency}
+								isPinned
+								onClick={() => itemClickHandler(item)}
+							/>
+						))}
+						{coinList
+							.filter((item) => {
+								const result = _.find(pinList, (o) =>
+									_.isEqual(item, o)
+								)
+								return result === undefined
+							})
+							.map((item) => (
+								<CoinItem
+									key={Math.random()}
+									name={item.name}
+									baseCurrency={item.baseCurrency}
+									isPinned={false}
+									onClick={() => itemClickHandler(item)}
+								/>
+							))}
+					</ul>
+				</Card>
 				<Card></Card>
 			</Container>
 		</MainPage>
