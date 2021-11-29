@@ -48,6 +48,15 @@ function App() {
 		return () => clearInterval(interval)
 	}, [])
 
+	if (isLoading) {
+		return (
+			<MainPage>
+				{" "}
+				<h1> Loading... </h1>
+			</MainPage>
+		)
+	}
+
 	return (
 		<MainPage>
 			<Header>
