@@ -12,10 +12,9 @@ import {
 	XAxis,
 	VerticalGridLines,
 } from "react-vis"
-import "../node_modules/react-vis/dist/style.css"
 import CoinItem from "./components/CoinItem/CoinItem"
-import { MainPage, Header, Container, Card } from "./components/UI"
 import { useContainerDimensions } from "./hooks/useContainerDimensions"
+import { MainPage, Header, Container, Card } from "./components/UI"
 
 let data: { x: number; y: number }[] = []
 const localPinList = JSON.parse(localStorage.getItem("pins")!)
@@ -23,9 +22,11 @@ const localPinList = JSON.parse(localStorage.getItem("pins")!)
 function App() {
 	const [error, setError] = useState<any>()
 	const [isLoading, setIsLoading] = useState(false)
+
 	const [coinList, setCoinList] = useState<ICoin[]>([])
 	const [bitcoinPrices, setBitcoinPrices] = useState<string[][]>([])
 	const [pinList, setPinList] = useState<ICoin[]>(localPinList)
+
 	const graphRef = useRef<HTMLDivElement>(null)
 	const { width, height } = useContainerDimensions(graphRef)
 
