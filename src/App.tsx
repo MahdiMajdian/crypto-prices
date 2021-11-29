@@ -16,17 +16,27 @@ function App() {
 	useEffect(() => {
 		const fetchCoinList = async () => {
 			try {
+				setIsLoading(true)
 				const coinList = await getCoinList()
-
+				setIsLoading(false)
 				setCoinList(coinList.data)
-			} catch (e) {}
+				setError(null)
+			} catch (e) {
+				setIsLoading(false)
+				setError(e)
+			}
 		}
 		const fetchBitcoinPrice = async () => {
 			try {
+				setIsLoading(true)
 				const bitcoinPrice = await getBitcoinPrice()
-
+				setIsLoading(false)
 				setBitcoinPrices(bitcoinPrice.data)
-			} catch (e) {}
+				setError(null)
+			} catch (e) {
+				setIsLoading(false)
+				setError(e)
+			}
 		}
 		fetchCoinList()
 		fetchBitcoinPrice()
