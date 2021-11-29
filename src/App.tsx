@@ -81,33 +81,40 @@ function App() {
 			</Header>
 			<Container>
 				<Card>
-					<ul>
-						{pinList.map((item) => (
-							<CoinItem
-								key={Math.random()}
-								name={item.name}
-								baseCurrency={item.baseCurrency}
-								isPinned
-								onClick={() => itemClickHandler(item)}
-							/>
-						))}
-						{coinList
-							.filter((item) => {
-								const result = _.find(pinList, (o) =>
-									_.isEqual(item, o)
-								)
-								return result === undefined
-							})
-							.map((item) => (
+					{error === null ? (
+						<ul>
+							{pinList.map((item) => (
 								<CoinItem
 									key={Math.random()}
 									name={item.name}
 									baseCurrency={item.baseCurrency}
-									isPinned={false}
+									isPinned
 									onClick={() => itemClickHandler(item)}
 								/>
 							))}
-					</ul>
+							{coinList
+								.filter((item) => {
+									const result = _.find(pinList, (o) =>
+										_.isEqual(item, o)
+									)
+									return result === undefined
+								})
+								.map((item) => (
+									<CoinItem
+										key={Math.random()}
+										name={item.name}
+										baseCurrency={item.baseCurrency}
+										isPinned={false}
+										onClick={() => itemClickHandler(item)}
+									/>
+								))}
+						</ul>
+					) : (
+						<h4 style={{ padding: "1rem 0", textAlign: "center" }}>
+							Some thing went wrong:
+							<pre>{JSON.stringify(error, null, 2)}</pre>
+						</h4>
+					)}
 				</Card>
 				<Card></Card>
 			</Container>
