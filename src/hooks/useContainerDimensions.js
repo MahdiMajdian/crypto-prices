@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react"
 
 export const useContainerDimensions = (myRef) => {
-	const getDimensions = () => ({
-		width: myRef.current.offsetWidth,
-		height: myRef.current.offsetHeight,
-	})
-
 	const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
 	useEffect(() => {
+		const getDimensions = () => ({
+			width: myRef.current.offsetWidth,
+			height: myRef.current.offsetHeight,
+		})
 		const handleResize = () => {
 			setDimensions(getDimensions())
 		}
@@ -22,7 +21,7 @@ export const useContainerDimensions = (myRef) => {
 		return () => {
 			window.removeEventListener("resize", handleResize)
 		}
-	}, [myRef, getDimensions])
+	}, [myRef])
 
 	return dimensions
 }
